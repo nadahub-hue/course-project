@@ -1,16 +1,15 @@
-// ===================== ENV SETUP (MUST BE FIRST) =====================
+
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Required for ES Modules (__dirname replacement)
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Force-load .env from the SAME folder as index.js
 dotenv.config({ path: path.join(__dirname, ".env") });
 
-// DEBUG — remove later
+
 console.log("===== ENV CHECK =====");
 console.log("EMAIL_USER =", process.env.EMAIL_USER);
 console.log("EMAIL_PASS exists =", !!process.env.EMAIL_PASS);
@@ -18,14 +17,13 @@ console.log("PORT =", process.env.PORT);
 console.log("ENV PATH =", path.join(__dirname, ".env"));
 console.log("=====================");
 
-// ===================== IMPORTS =====================
+
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import session from "express-session";
 
-// Models
 import userModel from "./models/userModel.js";
 import taxiDriverModel from "./models/taxiDriverModel.js";
 import tripModel from "./models/tripModel.js";
@@ -33,17 +31,16 @@ import bookingModel from "./models/bookingModel.js";
 import feedbackModel from "./models/feedbackModel.js";
 import adminModel from "./models/adminModel.js";
 
-// Routes
+
 import authRoutes from "./routes/authRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 
-// ===================== APP SETUP =====================
+
 const TravelBuddy_App = express();
 
 TravelBuddy_App.use(express.json());
 TravelBuddy_App.use(cors());
 
-// ===================== SESSION =====================
 TravelBuddy_App.use(
   session({
     secret: process.env.SESSION_SECRET || "a-very-strong-secret-key",
@@ -53,11 +50,11 @@ TravelBuddy_App.use(
   })
 );
 
-// ===================== ROUTES =====================
+=
 TravelBuddy_App.use(authRoutes);
 TravelBuddy_App.use(paymentRoutes);
 
-// ===================== DATABASE =====================
+
 try {
   const TravelBuddy_App_ConnectionString = `mongodb+srv://${process.env.MONGODB_USERID}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_CLUSTER}/${process.env.MONGODB_DATABASE}`;
 
@@ -74,13 +71,13 @@ try {
   process.exit(1);
 }
 
-// ===================== SERVER =====================
+
 const PORT = process.env.PORT || 7500;
 TravelBuddy_App.listen(PORT, () => {
   console.log(`Travel Buddy Server running at port ${PORT} ...!`);
 });
 
-// ================== USER REGISTRATION ==================
+
 TravelBuddy_App.post("/userRegister", async (req, res) => {
   try {
     const exist = await userModel.findOne({ userEmail: req.body.email });
@@ -106,7 +103,6 @@ TravelBuddy_App.post("/userRegister", async (req, res) => {
   }
 });
 
-// ================== USER LOGIN ==================
 TravelBuddy_App.post("/userLogin", async (req, res) => {
   try {
     const userExist = await userModel.findOne({
@@ -136,7 +132,7 @@ TravelBuddy_App.post("/userLogin", async (req, res) => {
   }
 });
 
-// ================== DRIVER REGISTRATION ==================
+
 TravelBuddy_App.post("/driverRegister", async (req, res) => {
   try {
     const driverExist = await taxiDriverModel.findOne({
@@ -172,7 +168,7 @@ TravelBuddy_App.post("/driverRegister", async (req, res) => {
   }
 });
 
-// ================== DRIVER LOGIN ==================
+
 TravelBuddy_App.post("/driverLogin", async (req, res) => {
   try {
     const driver = await taxiDriverModel.findOne({
@@ -212,7 +208,7 @@ TravelBuddy_App.post("/driverLogin", async (req, res) => {
   }
 });
 
-// ================== ADMIN LOGIN ==================
+
 TravelBuddy_App.post("/adminLogin", async (req, res) => {
   try {
     const adminExist = await adminModel.findOne({
@@ -252,7 +248,7 @@ TravelBuddy_App.post("/adminLogin", async (req, res) => {
   }
 });
 
-// ================== PING ==================
+
 TravelBuddy_App.get("/", (req, res) => {
   res.send("Travel Buddy API is running.");
 });
